@@ -5,7 +5,8 @@ import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
-import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
+import de.robv.android.xposed.callbacks.XC_LoadPackage;   // 导入外部类
+import android.content.ComponentName;
 
 public class XposedInit implements IXposedHookLoadPackage {
     @Override
