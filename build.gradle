@@ -1,0 +1,10 @@
+buildscript {
+    repositories {
+        google()           // 用于下载 AGP
+        mavenCentral()
+    }
+    dependencies {
+        // 使用与 Gradle 7.5 兼容的 AGP 版本（推荐 7.2.2）
+        classpath 'com.android.tools.build:gradle:7.2.2'
+    }
+}

@@ -1,0 +1,63 @@
+name: Build and Publish Pre-release
+
+on:
+  push:
+    tags:
+      - 'v*-pre'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 7.5
+
+      - name: Generate Gradle Wrapper (if missing)
+        run: |
+          if [ ! -f gradlew ]; then
+            echo "gradlew not found, generating wrapper..."
+            # 临时移动可能引起冲突的目录和文件
+            if [ -d app ]; then mv app app.bak; fi
+            if [ -f build.gradle ]; then mv build.gradle build.gradle.bak; fi
+            # 生成 Wrapper
+            gradle wrapper --gradle-version 7.5
+            # 恢复移动的内容
+            if [ -d app.bak ]; then mv app.bak app; fi
+            if [ -f build.gradle.bak ]; then mv build.gradle.bak build.gradle; fi
+            chmod +x gradlew
+          else
+            chmod +x gradlew
+          fi
+
+      - name: Decode Keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > keystore.jks
+
+      - name: Build Release APK
+        env:
+          KEYSTORE_PATH: ${{ github.workspace }}/keystore.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew assembleRelease
+
+      - name: Upload APK to Pre-release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: app/build/outputs/apk/release/*.apk
+          prerelease: true
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
