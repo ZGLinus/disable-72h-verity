@@ -13,7 +13,7 @@
 
 ## ✨ 功能
 
-- 拦截系统服务 `android.app.admin.DevicePolicyManager/getRequiredStrongAuthTimeout` 方法，阻止其重置强认证计时器。
+- 拦截系统服务 `android.app.admin.DevicePolicyManager.getRequiredStrongAuthTimeout` 方法，修改返回值为1年而不是3天。
 - 完全移除 72 小时强制密码验证，但**不会移除或禁用已有的锁屏密码**，安全性不受影响。
 - 提供简洁的状态界面，实时显示 Hook 是否生效。
 - 项目结构图

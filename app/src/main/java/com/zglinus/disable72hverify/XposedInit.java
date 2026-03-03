@@ -23,7 +23,7 @@ public class XposedInit implements IXposedHookLoadPackage {
                 new XC_MethodHook() {
                     @Override
 		    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                         param.setResult(Long.MAX_VALUE);
+                         param.setResult(365L * 24 * 60 * 60 * 1000);
 			 long original = (long) param.getResult();
 			 XposedBridge.log("Original timeout: " + original);
                     }
